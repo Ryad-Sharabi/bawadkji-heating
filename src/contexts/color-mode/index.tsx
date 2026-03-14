@@ -1,6 +1,5 @@
 "use client";
 
-import { RefineThemes } from "@refinedev/antd";
 import { App as AntdApp, ConfigProvider, theme } from "antd";
 import Cookies from "js-cookie";
 import React, {
@@ -9,6 +8,14 @@ import React, {
   useEffect,
   useState,
 } from "react";
+
+const brandTheme = {
+  token: {
+    colorPrimary: "#e61e26",
+    colorPrimaryHover: "#c41a21",
+    colorPrimaryActive: "#a3161c",
+  },
+};
 
 type ColorModeContextType = {
   mode: string;
@@ -60,9 +67,8 @@ export const ColorModeContextProvider: React.FC<
       }}
     >
       <ConfigProvider
-        // you can change the theme colors here. example: ...RefineThemes.Magenta,
         theme={{
-          ...RefineThemes.Blue,
+          ...brandTheme,
           algorithm: mode === "light" ? defaultAlgorithm : darkAlgorithm,
         }}
       >

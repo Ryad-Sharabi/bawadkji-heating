@@ -1,0 +1,32 @@
+// Prisma schema – استخدم متغير البيئة DATABASE_URL ولا تضعه أبداً في الكود
+// استخدم .env للمطورين و .env.production أو إعدادات الاستضافة في الإنتاج
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  name        String
+  description String?  @db.Text
+  category    String   // catSolar | catBurners | catPumps | ...
+  images      Json     @default("[]") // string[]
+  available   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("product")
+}
