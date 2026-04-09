@@ -1799,6 +1799,14 @@ html[data-theme="light"] .about-page-footer {
   gap: 32px;
   align-items: start;
 }
+.product-detail-container {
+  padding-top: 24px !important;
+}
+@media (min-width: 992px) {
+  .product-detail-container {
+    padding-top: 64px !important;
+  }
+}
 @media (max-width: 768px) {
   .products-detail-grid {
     grid-template-columns: 1fr;

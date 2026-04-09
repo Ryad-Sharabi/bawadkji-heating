@@ -16,6 +16,27 @@ type Product = {
 };
 
 const categoryMap = Object.fromEntries(PRODUCT_CATEGORIES.map((c) => [c.value, c.label]));
+const FALLBACK_IMAGE = "/logo.jpg";
+
+function ProductCardImage({ src, alt }: { src?: string; alt: string }) {
+  const [imgSrc, setImgSrc] = useState(src || FALLBACK_IMAGE);
+
+  useEffect(() => {
+    setImgSrc(src || FALLBACK_IMAGE);
+  }, [src]);
+
+  return (
+    <Image
+      src={imgSrc}
+      alt={alt}
+      fill
+      sizes="(max-width: 768px) 100vw, 260px"
+      style={{ objectFit: "cover" }}
+      unoptimized
+      onError={() => setImgSrc(FALLBACK_IMAGE)}
+    />
+  );
+}
 
 function ProductsPageContent() {
   const searchParams = useSearchParams();
@@ -127,13 +148,7 @@ function ProductsPageContent() {
                 }}
               >
                 {Array.isArray(p.images) && p.images[0] ? (
-                  <Image
-                    src={p.images[0]}
-                    alt={p.name}
-                    fill
-                    sizes="(max-width: 768px) 100vw, 260px"
-                    style={{ objectFit: "cover" }}
-                  />
+                  <ProductCardImage src={p.images[0]} alt={p.name} />
                 ) : (
                   <div
                     style={{

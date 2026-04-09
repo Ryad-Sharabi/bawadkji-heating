@@ -2,7 +2,7 @@
 
 import { Form, Input, Button, Card, Typography, App } from "antd";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const { Title } = Typography;
 
@@ -10,6 +10,10 @@ export default function AdminLoginPage() {
   const { message } = App.useApp();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    router.prefetch("/admin");
+  }, [router]);
 
   const onFinish = async (values: { email: string; password: string }) => {
     setLoading(true);
@@ -25,9 +29,7 @@ export default function AdminLoginPage() {
         message.error(data.error || "فشل تسجيل الدخول");
         return;
       }
-      message.success("تم تسجيل الدخول");
-      router.push("/admin");
-      router.refresh();
+      router.replace("/admin");
     } finally {
       setLoading(false);
     }

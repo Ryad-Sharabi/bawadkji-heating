@@ -1,7 +1,7 @@
 "use client";
 
 import { Authenticated } from "@refinedev/core";
-import { Form, Input, Select, Switch, Upload, Image, Button, Space, App, Card, Spin } from "antd";
+import { Form, Input, Select, Switch, Upload, Image, Button, Space, App, Card, Spin, Progress } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { PRODUCT_CATEGORIES } from "@constants/product-categories";
 import { useState, useEffect, useCallback } from "react";
@@ -65,13 +65,37 @@ function EditProductForm() {
     }
   }, [product, form]);
 
-  const uploadFile = async (file: File): Promise<string> => {
+  const uploadFile = async (file: File, onProgress?: (percent: number) => void): Promise<string> => {
     const formData = new FormData();
     formData.append("file", file);
-    const res = await fetch("/api/upload", { method: "POST", body: formData });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || "فشل الرفع");
-    return data.url;
+    return new Promise<string>((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open("POST", "/api/upload");
+      xhr.withCredentials = true;
+
+      xhr.upload.onprogress = (event) => {
+        if (!event.lengthComputable) return;
+        const percent = Math.round((event.loaded / event.total) * 100);
+        onProgress?.(percent);
+      };
+
+      xhr.onload = () => {
+        try {
+          const data = JSON.parse(xhr.responseText || "{}");
+          if (xhr.status >= 200 && xhr.status < 300 && data.url) {
+            onProgress?.(100);
+            resolve(data.url as string);
+            return;
+          }
+          reject(new Error(data.error || "فشل الرفع"));
+        } catch {
+          reject(new Error("فشل قراءة استجابة الرفع"));
+        }
+      };
+
+      xhr.onerror = () => reject(new Error("فشل الاتصال أثناء الرفع"));
+      xhr.send(formData);
+    });
   };
 
   const onFinish = (values: Record<string, unknown>) => {
@@ -157,23 +181,26 @@ function ProductImagesUpload({
 }: {
   uploading: boolean;
   setUploading: (v: boolean) => void;
-  uploadFile: (f: File) => Promise<string>;
+  uploadFile: (f: File, onProgress?: (percent: number) => void) => Promise<string>;
   message: { success: (s: string) => void; error: (s: string) => void };
   value?: string[];
   onChange?: (urls: string[]) => void;
 }) {
   const urls = Array.isArray(value) ? value : [];
+  const [progress, setProgress] = useState(0);
 
   const addImage = async (file: File) => {
     setUploading(true);
+    setProgress(0);
     try {
-      const url = await uploadFile(file);
+      const url = await uploadFile(file, (percent) => setProgress(percent));
       onChange?.([...urls, url]);
       message.success("تم رفع الصورة");
     } catch {
       message.error("فشل رفع الصورة");
     } finally {
       setUploading(false);
+      setProgress(0);
     }
   };
 
@@ -183,7 +210,8 @@ function ProductImagesUpload({
   };
 
   return (
-    <Space wrap size="small">
+    <div>
+      <Space wrap size="small">
       {urls.map((url, i) => (
         <div key={url} style={{ position: "relative" }}>
           <Image src={url} alt="" width={80} height={80} style={{ objectFit: "cover" }} />
@@ -221,6 +249,12 @@ function ProductImagesUpload({
           <PlusOutlined /> {uploading ? "..." : "إضافة"}
         </div>
       </Upload>
-    </Space>
+      </Space>
+      {uploading && (
+        <div style={{ marginTop: 10, maxWidth: 220 }}>
+          <Progress percent={progress} size="small" status="active" />
+        </div>
+      )}
+    </div>
   );
 }

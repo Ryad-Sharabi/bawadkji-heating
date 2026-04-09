@@ -16,6 +16,7 @@ type Product = {
 };
 
 const categoryMap = Object.fromEntries(PRODUCT_CATEGORIES.map((c) => [c.value, c.label]));
+const FALLBACK_IMAGE = "/logo.jpg";
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -23,6 +24,7 @@ export default function ProductDetailPage() {
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(!!id);
   const [selectedImage, setSelectedImage] = useState(0);
+  const [mainSrc, setMainSrc] = useState(FALLBACK_IMAGE);
 
   const fetchProduct = useCallback(async () => {
     if (!id) return;
@@ -36,6 +38,11 @@ export default function ProductDetailPage() {
       const data = await res.json();
       setProduct(data);
       setSelectedImage(0);
+      const firstImage =
+        Array.isArray((data as Product).images) && (data as Product).images[0]
+          ? (data as Product).images[0]
+          : FALLBACK_IMAGE;
+      setMainSrc(firstImage);
     } finally {
       setLoading(false);
     }
@@ -65,10 +72,10 @@ export default function ProductDetailPage() {
   }
 
   const images = Array.isArray(product.images) ? product.images : [];
-  const mainImage = images[selectedImage] ?? images[0];
+  const mainImage = images[selectedImage] ?? images[0] ?? FALLBACK_IMAGE;
 
   return (
-    <div className="container" style={{ maxWidth: 900, margin: "0 auto", padding: "0 16px 48px" }}>
+    <div className="container product-detail-container" style={{ maxWidth: 900, margin: "0 auto", padding: "0 16px 48px" }}>
       <Link
         href="/products"
         style={{
@@ -98,12 +105,14 @@ export default function ProductDetailPage() {
           >
             {mainImage ? (
               <Image
-                src={mainImage}
+                src={mainSrc}
                 alt={product.name}
                 fill
                 sizes="(max-width: 768px) 100vw, 50vw"
                 style={{ objectFit: "cover" }}
                 priority
+                unoptimized
+                onError={() => setMainSrc(FALLBACK_IMAGE)}
               />
             ) : (
               <div
@@ -126,7 +135,10 @@ export default function ProductDetailPage() {
                 <button
                   key={i}
                   type="button"
-                  onClick={() => setSelectedImage(i)}
+                  onClick={() => {
+                    setSelectedImage(i);
+                    setMainSrc(src || FALLBACK_IMAGE);
+                  }}
                   style={{
                     width: 56,
                     height: 56,
@@ -138,7 +150,15 @@ export default function ProductDetailPage() {
                     background: "var(--landing-dark-bg-alt)",
                   }}
                 >
-                  <Image src={src} alt="" width={56} height={56} style={{ objectFit: "cover" }} />
+                  <Image
+                    src={src || FALLBACK_IMAGE}
+                    alt=""
+                    width={56}
+                    height={56}
+                    style={{ objectFit: "cover" }}
+                    unoptimized
+                    onError={() => setMainSrc(FALLBACK_IMAGE)}
+                  />
                 </button>
               ))}
             </div>
