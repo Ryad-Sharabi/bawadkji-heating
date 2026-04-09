@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { Authenticated } from "@refinedev/core";
-import { Card, Table, Tag, Space, Image, Button, Grid, Empty } from "antd";
+import { Card, Table, Tag, Space, Image, Button, Grid, Empty, Popconfirm, App } from "antd";
 import { PRODUCT_CATEGORIES } from "@constants/product-categories";
 import { EditOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
@@ -20,11 +20,13 @@ type ProductRow = {
 };
 
 function ProductsList() {
+  const { message } = App.useApp();
   const router = useRouter();
   const screens = Grid.useBreakpoint();
   const queryClient = useQueryClient();
   const [list, setList] = useState<ProductRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const { mutate: deleteOne } = useDelete();
   const isMobile = !screens.md;
 
@@ -48,15 +50,21 @@ function ProductsList() {
   }, [fetchProducts]);
 
   const handleDelete = (id: string) => {
-    if (typeof window === "undefined" || !window.confirm("حذف هذا المنتج؟")) return;
+    setDeletingId(id);
     deleteOne(
       { resource: "products", id },
       {
         onSuccess: () => {
           queryClient.invalidateQueries({ predicate: (q) => (q.queryKey as string[]).includes("products") });
+          message.success("تم حذف المنتج");
           fetchProducts();
           router.refresh();
         },
+        onError: () => {
+          message.error("فشل حذف المنتج");
+          setDeletingId(null);
+        },
+        onSettled: () => setDeletingId(null),
       }
     );
   };
@@ -115,13 +123,23 @@ function ProductsList() {
                   <Space style={{ width: "100%", justifyContent: "flex-end" }}>
                     <Button
                       icon={<EditOutlined />}
+                      disabled={deletingId === record.id}
                       onClick={() => router.push(`/admin/products/edit/${record.id}`)}
                     >
                       تعديل
                     </Button>
-                    <Button danger icon={<DeleteOutlined />} onClick={() => handleDelete(record.id)}>
-                      حذف
-                    </Button>
+                    <Popconfirm
+                      title="حذف المنتج"
+                      description="هل أنت متأكد من حذف هذا المنتج؟"
+                      okText="حذف"
+                      cancelText="إلغاء"
+                      okButtonProps={{ danger: true, loading: deletingId === record.id }}
+                      onConfirm={() => handleDelete(record.id)}
+                    >
+                      <Button danger icon={<DeleteOutlined />} loading={deletingId === record.id}>
+                        حذف
+                      </Button>
+                    </Popconfirm>
                   </Space>
                 </Card>
               ))
@@ -176,9 +194,19 @@ function ProductsList() {
                   <Button
                     type="text"
                     icon={<EditOutlined />}
+                    disabled={deletingId === record.id}
                     onClick={() => router.push(`/admin/products/edit/${record.id}`)}
                   />
-                  <Button type="text" danger icon={<DeleteOutlined />} onClick={() => handleDelete(record.id)} />
+                  <Popconfirm
+                    title="حذف المنتج"
+                    description="هل أنت متأكد من حذف هذا المنتج؟"
+                    okText="حذف"
+                    cancelText="إلغاء"
+                    okButtonProps={{ danger: true, loading: deletingId === record.id }}
+                    onConfirm={() => handleDelete(record.id)}
+                  >
+                    <Button type="text" danger icon={<DeleteOutlined />} loading={deletingId === record.id} />
+                  </Popconfirm>
                 </Space>
               )}
             />
