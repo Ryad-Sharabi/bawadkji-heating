@@ -5,6 +5,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { PRODUCT_CATEGORIES } from "@constants/product-categories";
+import { usePublicLocale } from "@components/landing/PublicLocaleContext";
+import { translations } from "@components/landing/translations";
 
 type Product = {
   id: string;
@@ -30,8 +32,8 @@ function ProductCardImage({ src, alt }: { src?: string; alt: string }) {
       src={imgSrc}
       alt={alt}
       fill
-      sizes="(max-width: 768px) 100vw, 260px"
-      style={{ objectFit: "cover" }}
+      sizes="(max-width: 520px) 100vw, (max-width: 900px) 50vw, (max-width: 1200px) 33vw, 25vw"
+      className="products-catalog-card-image"
       unoptimized
       onError={() => setImgSrc(FALLBACK_IMAGE)}
     />
@@ -41,6 +43,8 @@ function ProductCardImage({ src, alt }: { src?: string; alt: string }) {
 function ProductsPageContent() {
   const searchParams = useSearchParams();
   const categoryParam = searchParams.get("category") ?? "";
+  const locale = usePublicLocale();
+  const t = translations[locale];
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -62,173 +66,92 @@ function ProductsPageContent() {
     fetchProducts();
   }, [fetchProducts]);
 
-  const categoryLabel = useMemo(
-    () => (categoryParam && categoryMap[categoryParam] ? categoryMap[categoryParam] : null),
-    [categoryParam]
+  const getCategoryLabel = useCallback(
+    (value: string) => {
+      const key = value as keyof typeof t;
+      if (typeof t[key] === "string") return t[key] as string;
+      return categoryMap[value] ?? value;
+    },
+    [t]
   );
 
+  const categoryLabel = useMemo(
+    () => (categoryParam ? getCategoryLabel(categoryParam) : null),
+    [categoryParam, getCategoryLabel]
+  );
+
+  const pageTitle = categoryLabel ?? t.productsListTitle;
+
   return (
-    <div className="container" style={{ maxWidth: 1200, margin: "0 auto", padding: "0 16px" }}>
-      <div style={{ marginBottom: 24 }}>
-        <h1 style={{ fontSize: "1.75rem", fontWeight: 700, marginBottom: 8, color: "var(--text-primary, #fff)" }}>
-          {categoryLabel ? categoryLabel : "المنتجات"}
-        </h1>
-        <p style={{ color: "var(--text-muted, #94a3b8)", margin: 0 }}>
-          {categoryLabel ? `منتجات الفئة: ${categoryLabel}` : "تصفح جميع المنتجات المتوفرة"}
-        </p>
-      </div>
-
-      {!categoryParam && (
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 24 }}>
-          <Link
-            href="/products"
-            style={{
-              padding: "8px 16px",
-              borderRadius: 8,
-              background: "var(--brand-red, #e61e26)",
-              color: "#fff",
-              textDecoration: "none",
-              fontSize: 14,
-              fontWeight: 500,
-            }}
-          >
-            الكل
+    <section className="products-catalog section" aria-label={pageTitle}>
+      <div className="container products-catalog-container">
+        <header className="products-catalog-header">
+          <Link href="/#categories" className="products-catalog-back">
+            {t.productsBackCategories}
           </Link>
-          {PRODUCT_CATEGORIES.map((cat) => (
-            <Link
-              key={cat.value}
-              href={`/products?category=${cat.value}`}
-              style={{
-                padding: "8px 16px",
-                borderRadius: 8,
-                background: "var(--glass-bg, rgba(255,255,255,0.06))",
-                color: "var(--text-muted, #94a3b8)",
-                textDecoration: "none",
-                fontSize: 14,
-                border: "1px solid var(--glass-border, rgba(255,255,255,0.12))",
-              }}
-            >
-              {cat.label}
-            </Link>
-          ))}
-        </div>
-      )}
+          <p className="products-catalog-kicker">{t.categoriesSubtitle}</p>
+          <h1 className="products-catalog-title">{pageTitle}</h1>
+        </header>
 
-      {loading ? (
-        <div style={{ textAlign: "center", padding: 48, color: "var(--text-muted)" }}>جاري التحميل...</div>
-      ) : products.length === 0 ? (
-        <div style={{ textAlign: "center", padding: 48, color: "var(--text-muted)" }}>
-          لا توجد منتجات في هذه الفئة.
-        </div>
-      ) : (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
-            gap: 24,
-          }}
-        >
-          {products.map((p) => (
-            <article
-              key={p.id}
-              style={{
-                background: "var(--glass-bg, rgba(255,255,255,0.06))",
-                borderRadius: 12,
-                border: "1px solid var(--glass-border, rgba(255,255,255,0.12))",
-                overflow: "hidden",
-                display: "flex",
-                flexDirection: "column",
-              }}
-            >
-              <div
-                style={{
-                  aspectRatio: "4/3",
-                  position: "relative",
-                  background: "var(--landing-dark-bg-alt, #1e293b)",
-                }}
-              >
-                {Array.isArray(p.images) && p.images[0] ? (
-                  <ProductCardImage src={p.images[0]} alt={p.name} />
-                ) : (
-                  <div
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      color: "var(--text-muted)",
-                      fontSize: 14,
-                    }}
-                  >
-                    لا صورة
-                  </div>
-                )}
-              </div>
-              <div style={{ padding: 16, flex: 1, display: "flex", flexDirection: "column" }}>
-                <span
-                  style={{
-                    fontSize: 12,
-                    color: "var(--brand-red, #e61e26)",
-                    marginBottom: 4,
-                  }}
-                >
-                  {categoryMap[p.category] ?? p.category}
-                </span>
-                <h2
-                  style={{
-                    fontSize: "1.1rem",
-                    fontWeight: 600,
-                    margin: "0 0 8px",
-                    color: "var(--text-primary, #fff)",
-                    lineHeight: 1.3,
-                  }}
-                >
-                  {p.name}
-                </h2>
-                <p
-                  style={{
-                    fontSize: 13,
-                    color: "var(--text-muted)",
-                    margin: 0,
-                    flex: 1,
-                    display: "-webkit-box",
-                    WebkitLineClamp: 2,
-                    WebkitBoxOrient: "vertical",
-                    overflow: "hidden",
-                  }}
-                >
-                  {p.description || ""}
-                </p>
-                <Link
-                  href={`/products/${p.id}`}
-                  style={{
-                    marginTop: 12,
-                    display: "inline-block",
-                    padding: "10px 16px",
-                    borderRadius: 8,
-                    background: "var(--brand-red, #e61e26)",
-                    color: "#fff",
-                    textDecoration: "none",
-                    fontSize: 14,
-                    fontWeight: 500,
-                    textAlign: "center",
-                  }}
-                >
-                  تفاصيل
+        {loading ? (
+          <div className="products-catalog-state" aria-busy="true" aria-live="polite">
+            <p>{t.productsLoading}</p>
+          </div>
+        ) : products.length === 0 ? (
+          <div className="products-catalog-state">
+            <p>{t.productsEmpty}</p>
+            <Link href="/#categories" className="products-catalog-details">
+              {t.productsBackCategories}
+            </Link>
+          </div>
+        ) : (
+          <div className="products-catalog-grid">
+            {products.map((product) => (
+              <article key={product.id} className="products-catalog-card">
+                <Link href={`/products/${product.id}`} className="products-catalog-card-media" aria-label={product.name}>
+                  {Array.isArray(product.images) && product.images[0] ? (
+                    <ProductCardImage src={product.images[0]} alt={product.name} />
+                  ) : (
+                    <div className="products-catalog-card-placeholder">{t.productsNoImage}</div>
+                  )}
                 </Link>
-              </div>
-            </article>
-          ))}
+                <div className="products-catalog-card-body">
+                  <span className="products-catalog-card-badge">{getCategoryLabel(product.category)}</span>
+                  <h2 className="products-catalog-card-title">
+                    <Link href={`/products/${product.id}`}>{product.name}</Link>
+                  </h2>
+                  {product.description ? <p className="products-catalog-card-desc">{product.description}</p> : null}
+                  <Link href={`/products/${product.id}`} className="products-catalog-details">
+                    {t.productsDetails}
+                  </Link>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
+
+function ProductsPageFallback() {
+  const locale = usePublicLocale();
+  const t = translations[locale];
+
+  return (
+    <section className="products-catalog section" aria-busy="true">
+      <div className="container products-catalog-container">
+        <div className="products-catalog-state">
+          <p>{t.productsLoading}</p>
         </div>
-      )}
-    </div>
+      </div>
+    </section>
   );
 }
 
 export default function ProductsPage() {
   return (
-    <Suspense fallback={<div style={{ textAlign: "center", padding: 48, color: "var(--text-muted)" }}>جاري التحميل...</div>}>
+    <Suspense fallback={<ProductsPageFallback />}>
       <ProductsPageContent />
     </Suspense>
   );

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { LandingHeader } from "@components/landing/LandingHeader";
 import { LandingFooter } from "@components/landing/LandingFooter";
+import { PublicLocaleProvider } from "@components/landing/PublicLocaleContext";
 import { translations, type Locale } from "@components/landing/translations";
 
 const THEME_KEY = "bawadkji-theme";
@@ -43,8 +44,8 @@ export default function ProductsLayout({ children }: { children: React.ReactNode
         navOpen={navOpen}
         setNavOpen={setNavOpen}
       />
-      <main style={{ minHeight: "60vh", paddingTop: 24, paddingBottom: 48 }}>
-        {children}
+      <main className="products-catalog-main">
+        <PublicLocaleProvider locale={locale}>{children}</PublicLocaleProvider>
       </main>
       <LandingFooter
         t={{

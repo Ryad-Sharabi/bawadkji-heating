@@ -72,6 +72,7 @@ export default function AboutPage() {
     setLocale(next);
     setLangDropdownOpen(false);
     localStorage.setItem(LOCALE_KEY, next);
+    window.dispatchEvent(new Event("bawadkji-locale-change"));
     document.documentElement.lang = next === "ar" ? "ar" : "en";
     document.documentElement.dir = next === "ar" ? "rtl" : "ltr";
   };

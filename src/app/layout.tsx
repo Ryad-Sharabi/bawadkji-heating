@@ -4,6 +4,9 @@ import { Metadata } from "next";
 import React from "react";
 
 import "./landing.css";
+import "./brand-buttons.css";
+import "./floating-contact.css";
+import { FloatingContactButtonRoot } from "@components/landing/FloatingContactButtonRoot";
 
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -15,7 +18,9 @@ export const metadata: Metadata = {
   title: "Floor Heating & Climate Solutions | Comfort Through Innovation",
   description: "Premium underfloor heating and HVAC solutions for homes and businesses worldwide.",
   icons: {
-    icon: "/favicon.ico",
+    icon: [{ url: "/logo.jpg", type: "image/jpeg" }],
+    shortcut: "/logo.jpg",
+    apple: "/logo.jpg",
   },
 };
 
@@ -44,6 +49,7 @@ export default function RootLayout({
           }}
         />
         {children}
+        <FloatingContactButtonRoot />
       </body>
     </html>
   );

@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
 import "swiper/css";
@@ -24,18 +24,19 @@ const PARTNERS_BRANDS = [
 ];
 
 const CATEGORIES_GRID = [
-  { src: "/solar.png", titleKey: "catSolar" as const },
-  { src: "/burner.png", titleKey: "catBurners" as const },
-  { src: "/pumps.png", titleKey: "catPumps" as const },
-  { src: "/accessories.png", titleKey: "catAccessories" as const },
-  { src: "/coler.png", titleKey: "catAc" as const },
-  { src: "/shofage.png", titleKey: "catRadiators" as const },
-  { src: "/ppr.png", titleKey: "catPpr" as const },
-  { src: "/pex.png", titleKey: "catPex" as const },
+  { src: "/solar.jpg", titleKey: "catSolar" as const },
+  { src: "/burner.jpg", titleKey: "catBurners" as const },
+  { src: "/nocchi.jpg", titleKey: "catPumps" as const },
+  { src: "/accessories.jpg", titleKey: "catAccessories" as const },
+  { src: "/AC.jpg", titleKey: "catAc" as const },
+  { src: "/radiator.jpg", titleKey: "catRadiators" as const },
+  { src: "/ppr.jpg", titleKey: "catPpr" as const },
+  { src: "/pex.jpg", titleKey: "catPex" as const },
+  { src: "/shower.jpg", titleKey: "catHeatingStairs" as const },
+  { src: "/underfloor.jpg", titleKey: "catUnderfloor" as const },
 ];
 
 export function LandingPage() {
-  const videoRef = useRef<HTMLVideoElement>(null);
   const [mounted, setMounted] = useState(false);
   const [navOpen, setNavOpen] = useState(false);
   const [theme, setTheme] = useState<"dark" | "light">("dark");
@@ -43,12 +44,6 @@ export function LandingPage() {
 
   useEffect(() => {
     setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    const v = videoRef.current;
-    if (!v) return;
-    v.play().catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -81,13 +76,13 @@ export function LandingPage() {
 
       <section className="landing-hero" aria-label="Hero">
         <div className="landing-hero-video-wrap">
-          <video
-            ref={videoRef}
-            src="/hero.mp4"
-            muted
-            loop
-            playsInline
-            poster=""
+          <Image
+            src="/hero.jpg"
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            className="landing-hero-image"
             aria-hidden
           />
         </div>

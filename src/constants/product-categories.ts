@@ -8,6 +8,8 @@ export const PRODUCT_CATEGORIES = [
   { value: "catRadiators", label: "مشعات" },
   { value: "catPpr", label: "أنابيب P.P.R" },
   { value: "catPex", label: "أنابيب P.E.X" },
+  { value: "catHeatingStairs", label: "سلالم تدفئة" },
+  { value: "catUnderfloor", label: "التدفئة الأرضية" },
 ] as const;
 
 export type ProductCategory = (typeof PRODUCT_CATEGORIES)[number]["value"];

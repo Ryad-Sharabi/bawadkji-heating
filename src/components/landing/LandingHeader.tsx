@@ -44,7 +44,10 @@ export function LandingHeader({ t, locale, theme, setTheme, setLocale, navOpen, 
   const setLocaleAndClose = (next: Locale) => {
     setLocale(next);
     setLangDropdownOpen(false);
-    if (typeof window !== "undefined") localStorage.setItem("bawadkji-locale", next);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("bawadkji-locale", next);
+      window.dispatchEvent(new Event("bawadkji-locale-change"));
+    }
   };
 
   return (

@@ -1,0 +1,204 @@
+/* Brand action buttons – shimmer hover (Uiverse-style, Bawadkji palette) */
+
+:root {
+  --brand-btn-color: #e61e26;
+  --brand-btn-color-hover: #c41a21;
+  --brand-btn-glow: rgba(230, 30, 38, 0.45);
+}
+
+@keyframes brandBtnShimmer {
+  from {
+    opacity: 0;
+    left: 0%;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+    left: 100%;
+  }
+}
+
+.landing-btn,
+.landing-nav-link,
+.ant-btn.ant-btn-default:not(.ant-btn-dangerous):not(.ant-btn-disabled),
+.ant-btn.ant-btn-primary:not(.ant-btn-dangerous):not(.ant-btn-disabled) {
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 0 0 transparent;
+  transition:
+    background 0.2s ease-in,
+    border-color 0.2s ease-in,
+    color 0.2s ease-in,
+    box-shadow 0.2s ease-in;
+}
+
+.landing-btn::before,
+.landing-nav-link::before,
+.ant-btn.ant-btn-default:not(.ant-btn-dangerous):not(.ant-btn-disabled)::before,
+.ant-btn.ant-btn-primary:not(.ant-btn-dangerous):not(.ant-btn-disabled)::before {
+  content: "";
+  display: block;
+  width: 0;
+  height: 86%;
+  position: absolute;
+  top: 7%;
+  left: 0;
+  opacity: 0;
+  background: #fff;
+  box-shadow: 0 0 50px 30px #fff;
+  transform: skewX(-20deg);
+  pointer-events: none;
+}
+
+.landing-btn:hover::before,
+.landing-nav-link:hover::before,
+.ant-btn.ant-btn-default:not(.ant-btn-dangerous):not(.ant-btn-disabled):hover::before,
+.ant-btn.ant-btn-primary:not(.ant-btn-dangerous):not(.ant-btn-disabled):hover::before {
+  animation: brandBtnShimmer 0.5s linear;
+}
+
+.landing-btn:active,
+.landing-nav-link:active,
+.ant-btn.ant-btn-default:not(.ant-btn-dangerous):not(.ant-btn-disabled):active,
+.ant-btn.ant-btn-primary:not(.ant-btn-dangerous):not(.ant-btn-disabled):active {
+  box-shadow: 0 0 0 0 transparent;
+  transition: box-shadow 0.2s ease-in;
+}
+
+.ant-btn.ant-btn-default:not(.ant-btn-dangerous):not(.ant-btn-disabled) > span,
+.ant-btn.ant-btn-primary:not(.ant-btn-dangerous):not(.ant-btn-disabled) > span {
+  position: relative;
+  z-index: 1;
+}
+
+.ant-btn.ant-btn-default:not(.ant-btn-dangerous):not(.ant-btn-disabled) {
+  border-color: var(--brand-btn-color);
+  color: var(--brand-btn-color);
+  background: transparent;
+}
+
+.ant-btn.ant-btn-default:not(.ant-btn-dangerous):not(.ant-btn-disabled):hover {
+  background: var(--brand-btn-color) !important;
+  border-color: var(--brand-btn-color) !important;
+  color: #fff !important;
+  box-shadow: 0 0 30px 5px var(--brand-btn-glow);
+  transition:
+    background 0.2s ease-out,
+    border-color 0.2s ease-out,
+    color 0.2s ease-out,
+    box-shadow 0.2s ease-out;
+}
+
+.ant-btn.ant-btn-primary:not(.ant-btn-dangerous):not(.ant-btn-disabled) {
+  border: 1px solid var(--brand-btn-color);
+  background: var(--brand-btn-color);
+  color: #fff;
+}
+
+.ant-btn.ant-btn-primary:not(.ant-btn-dangerous):not(.ant-btn-disabled):hover {
+  background: var(--brand-btn-color-hover) !important;
+  border-color: var(--brand-btn-color-hover) !important;
+  color: #fff !important;
+  box-shadow: 0 0 30px 5px var(--brand-btn-glow);
+  transition:
+    background 0.2s ease-out,
+    border-color 0.2s ease-out,
+    color 0.2s ease-out,
+    box-shadow 0.2s ease-out;
+}
+
+.landing-btn:not(.landing-btn-primary):hover,
+.landing-nav-link:not(.landing-nav-link-primary):hover {
+  background: var(--brand-btn-color);
+  border-color: var(--brand-btn-color);
+  color: #fff;
+  box-shadow: 0 0 30px 5px var(--brand-btn-glow);
+  transition:
+    background 0.2s ease-out,
+    border-color 0.2s ease-out,
+    color 0.2s ease-out,
+    box-shadow 0.2s ease-out;
+}
+
+.landing-btn-primary,
+.landing-nav-link-primary {
+  border-color: var(--brand-btn-color);
+  background: var(--brand-btn-color);
+  color: #fff;
+}
+
+.landing-btn-primary:hover,
+.landing-nav-link-primary:hover {
+  background: var(--brand-btn-color-hover);
+  border-color: var(--brand-btn-color-hover);
+  color: #fff;
+  box-shadow: 0 0 30px 5px var(--brand-btn-glow);
+  transition:
+    background 0.2s ease-out,
+    border-color 0.2s ease-out,
+    color 0.2s ease-out,
+    box-shadow 0.2s ease-out;
+}
+
+html[data-theme="light"] .landing-btn:not(.landing-btn-primary):hover,
+html[data-theme="light"] .landing-nav-link:not(.landing-nav-link-primary):hover {
+  background: var(--brand-btn-color);
+  border-color: var(--brand-btn-color);
+  color: #fff;
+  box-shadow: 0 0 30px 5px var(--brand-btn-glow);
+}
+
+html[data-theme="light"] .landing-hero-cta .landing-btn:not(.landing-btn-primary) {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.55);
+}
+
+html[data-theme="light"] .landing-hero-cta .landing-btn:not(.landing-btn-primary):hover {
+  background: var(--brand-btn-color);
+  border-color: var(--brand-btn-color);
+  color: #fff;
+}
+
+html[data-theme="light"] .landing-btn.landing-btn-primary {
+  background: var(--brand-btn-color);
+  border-color: var(--brand-btn-color);
+  color: #fff;
+}
+
+html[data-theme="light"] .landing-btn.landing-btn-primary:hover {
+  background: var(--brand-btn-color-hover);
+  border-color: var(--brand-btn-color-hover);
+  color: #fff;
+  box-shadow: 0 0 30px 5px var(--brand-btn-glow);
+}
+
+html[data-theme="light"] .landing-category-card-cta.landing-btn.landing-btn-primary {
+  background: transparent;
+  border-color: var(--brand-btn-color);
+  color: var(--brand-btn-color);
+}
+
+html[data-theme="light"] .landing-category-card-cta.landing-btn.landing-btn-primary:hover {
+  background: var(--brand-btn-color);
+  border-color: var(--brand-btn-color-hover);
+  color: #fff;
+  box-shadow: 0 0 30px 5px var(--brand-btn-glow);
+}
+
+html[data-theme="dark"] .landing-category-card-cta.landing-btn.landing-btn-primary {
+  background: var(--brand-btn-color);
+  border-color: var(--brand-btn-color);
+  color: #fff;
+}
+
+html[data-theme="dark"] .landing-category-card-cta.landing-btn.landing-btn-primary:hover {
+  background: var(--brand-btn-color-hover);
+  border-color: var(--brand-btn-color-hover);
+  color: #fff;
+  box-shadow: 0 0 30px 5px var(--brand-btn-glow);
+}
+
